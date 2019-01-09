@@ -1,8 +1,4 @@
-require_relative 'spec_helper'
-
-def app
-  ApplicationController
-end
+require_relative '../spec_helper'
 
 describe ApplicationController do
   it 'responds with a welcome message' do
