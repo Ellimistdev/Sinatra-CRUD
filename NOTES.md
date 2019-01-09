@@ -63,11 +63,11 @@ review
     - deletes review with id == :id  
 
 ## Views
->- index 
+>- index  
     - show latest reviews  
     - show registration?  
->- user
-    - action: create new user
+>- user  
+    - action: create new user  
     - view > see all reviews    
 >- movie    
     - show.erb > see all reviews for this movie  
