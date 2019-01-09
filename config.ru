@@ -4,3 +4,5 @@ raise 'Migrations are pending. Run `rake db:migrate` to resolve the issue.' if A
 
 use UsersController
 run ApplicationController
+use ReviewsController
+use MoviesController
