@@ -12,6 +12,7 @@ class MoviesController < ApplicationController
 
   get '/movies/:id' do
     # get reviews for movie
+    @movie = Movie.find_by(id: params[:id])
     erb :'/movies/show.html'
   end
 

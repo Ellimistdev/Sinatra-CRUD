@@ -7,9 +7,8 @@ class ReviewsController < ApplicationController
 
   # POST: /reviews
   post '/reviews' do
-    # create review
-    # redirect to review
-    redirect '/reviews/'
+    review = Review.create(content: params[:content], rating: params[:rating], movie_id: params[:movie_id], user_id: session[:user_id])
+    redirect "/movies/#{review.movie_id}"
   end
 
   # GET: /reviews/5
