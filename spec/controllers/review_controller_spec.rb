@@ -1,4 +1,3 @@
-require 'pry'
 require_relative '../spec_helper'
 describe ReviewsController do
   context 'when logged in,' do

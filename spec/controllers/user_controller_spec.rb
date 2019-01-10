@@ -6,10 +6,10 @@ describe UsersController do
     @user2 = User.create(username: 'user2', email: 'email2', password: 'password2')
     @movie = Movie.create(name: 'The movie')
     @movie2 = Movie.create(name: 'The movie, the sequel')
-    review1 = Review.create(content: 'good movie', rating: 5, user_id: @user.id, movie_id: @movie.id)
-    review2 = Review.create(content: 'okay movie', rating: 3, user_id: @user.id, movie_id: @movie2.id)
-    review3 = Review.create(content: 'meh movie', rating: 2, user_id: @user2.id, movie_id: @movie.id)
-    review4 = Review.create(content: 'bad movie', rating: 1, user_id: @user2.id, movie_id: @movie2.id)
+    Review.create(content: 'good movie', rating: 5, user_id: @user.id, movie_id: @movie.id)
+    Review.create(content: 'okay movie', rating: 3, user_id: @user.id, movie_id: @movie2.id)
+    Review.create(content: 'meh movie', rating: 2, user_id: @user2.id, movie_id: @movie.id)
+    Review.create(content: 'bad movie', rating: 1, user_id: @user2.id, movie_id: @movie2.id)
   end
 
   context 'when logged in,' do
@@ -17,7 +17,7 @@ describe UsersController do
       page.set_rack_session(user_id: @user.id)
     end
 
-    describe 'logging out' do 
+    describe 'logging out' do
       it 'clears the session' do
         page.driver.submit :post, '/logout', nil
 
@@ -26,7 +26,7 @@ describe UsersController do
     end
 
     describe "navigating to '/login'" do
-      it 'redirects to profile' do 
+      it 'redirects to profile' do
         visit '/login'
         expect(page.status_code).to eq(200)
         expect(page.current_path).to eq("/users/#{@user.id}")
@@ -34,7 +34,7 @@ describe UsersController do
     end
 
     describe "navigating to '/signup'" do
-      it 'redirects to profile' do 
+      it 'redirects to profile' do
         visit '/signup'
         expect(page.status_code).to eq(200)
         expect(page.current_path).to eq("/users/#{@user.id}")
@@ -45,14 +45,14 @@ describe UsersController do
       it 'loads /users/:id' do
         visit "/users/#{@user.id}"
         expect(page.status_code).to eq(200)
-        expect(page.current_path).to eq("/users/#{@user.id}")        
+        expect(page.current_path).to eq("/users/#{@user.id}")
       end
 
       it 'displays all user reviews' do
         visit "/users/#{@user.id}"
 
-        expect(page.body).to include(@user.reviews.first[:content])        
-        expect(page.body).to include(@user.reviews.last[:content])        
+        expect(page.body).to include(@user.reviews.first[:content])
+        expect(page.body).to include(@user.reviews.last[:content])
       end
     end
   end
