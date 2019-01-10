@@ -1,1 +1,11 @@
 <h1>This is the show page for an individual instance of your model.</h1>
+
+<p>Reviews by <%= @user.username %>!</p>
+<% if @user.reviews %>
+  <% reviews = @user.reviews %>
+  <% reviews.each do |review| %>
+    <%= review.content%>
+  <% end %> 
+<% else %>
+  <p><%= @user.username %> hasn't posted any reviews!</p>
+<% end %> 
