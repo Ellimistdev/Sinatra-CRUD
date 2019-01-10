@@ -1,7 +1,9 @@
 <h1>This is the show page for an individual instance of your model.</h1>
 <p>Add a review!</p>
 <form method='post' action='/reviews'>
- <input type='hidden' name='movie_id' value='<%=@movie.id%>'> 
+  <% if @movie %>
+    <input type='hidden' name='movie_id' value='<%=@movie.id%>'> 
+  <% end %>
   <input type='text' name='content'>
   <select name="rating">
     <option value="1">1</option>

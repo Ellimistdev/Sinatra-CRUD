@@ -13,6 +13,7 @@ class MoviesController < ApplicationController
   get '/movies/:id' do
     # get reviews for movie
     @movie = Movie.find_by(id: params[:id])
+    # redirect '/movies/new' unless @movie
     erb :'/movies/show.html'
   end
 
