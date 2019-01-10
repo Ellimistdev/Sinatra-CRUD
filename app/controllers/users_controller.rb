@@ -10,9 +10,10 @@ class UsersController < ApplicationController
 
   post '/login' do
     user = User.find_by(username: params[:username])
+    # binding.pry
     redirect '/signup' unless user && user.authenticate(params[:password])
     session[:user_id] = user.id
-    redirect '/users/:id'
+    redirect "/users/#{user.id}"
   end
 
   post '/logout' do
@@ -27,8 +28,12 @@ class UsersController < ApplicationController
 
   # create new user
   post '/users/new' do
-    # create new user from params
-    # send validation
+    # there's no way that posting a clear password like this is secure
+    User.create(
+      username: params[:username],
+      email: params[:email],
+      password: params[:password]
+    )
     redirect '/login'
   end
 

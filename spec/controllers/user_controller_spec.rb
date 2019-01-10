@@ -6,15 +6,15 @@ describe UsersController do
     @movie = Movie.create(name: 'The movie')
   end
 
-  context 'when logged in' do
+  context 'when logged in,' do
   end
 
-  context 'when logged out' do
-    describe 'loging in' do
+  context 'when logged out,' do
+    describe 'logging in' do
       it "loads '/login'" do
         visit '/login'
-        expect(last_response.status).to eq(200)
-        expect(last_response.body).to include('Log in')
+        expect(page.status_code).to eq(200)
+        expect(page.body).to include('Log in')
       end
 
       it 'logs in an existing user' do
@@ -22,17 +22,17 @@ describe UsersController do
         fill_in(:username, with: @user.username)
         fill_in(:password, with: 'password')
         click_button 'submit'
-
-        expect(session[:user_id]).to eq(@user.id)
+        # The 'user_id' key is saved as a string in the rack_session_access gem
+        expect(page.get_rack_session['user_id']).to eq(@user.id)
       end
 
-      it 'redirects to profile page' do
+      it "redirects to the user's profile page" do
         visit '/login'
         fill_in(:username, with: @user.username)
         fill_in(:password, with: 'password')
         click_button 'submit'
 
-        expect(last_response.status).to eq(200)
+        expect(page.status_code).to eq(200)
         expect(page.current_path).to eq("/users/#{@user.id}")
       end
 
@@ -42,7 +42,7 @@ describe UsersController do
         fill_in(:password, with: 'not password')
         click_button 'submit'
 
-        expect(last_response.status).to eq(200)
+        expect(page.status_code).to eq(200)
         expect(page.current_path).to eq('/signup')
       end
     end
@@ -50,11 +50,11 @@ describe UsersController do
     describe 'signing up' do
       it "loads '/signup'" do
         visit '/signup'
-        expect(last_response.status).to eq(200)
-        expect(last_response.body).to include('Sign up')
+        expect(page.status_code).to eq(200)
+        expect(page.body).to include('Sign up')
       end
 
-      it "redirects to '/login'" do
+      it "redirects to '/login' after signing up" do
         params = {
           username: 'username2',
           email: 'email2',
@@ -67,7 +67,7 @@ describe UsersController do
         fill_in(:password, with: params[:password])
         click_button 'submit'
 
-        expect(last_response.status).to eq(200)
+        expect(page.status_code).to eq(200)
         expect(page.current_path).to eq('/login')
       end
 

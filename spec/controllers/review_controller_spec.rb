@@ -1,7 +1,7 @@
 require 'pry'
 require_relative '../spec_helper'
 describe ReviewsController do
-  context 'logged in' do
+  context 'when logged in,' do
     before(:each) do
       @user = User.create(username: 'user', email: 'email', password: 'password')
       @movie = Movie.create(name: 'The movie')
@@ -10,10 +10,10 @@ describe ReviewsController do
 
     describe 'create new review' do
       it 'loads the new review form' do
-        get "/movies/#{@movie.id}"
+        visit "/movies/#{@movie.id}"
 
-        expect(last_response.status).to eq(200)
-        expect(last_response.body).to include('Add a review')
+        expect(page.status_code).to eq(200)
+        expect(page.body).to include('Add a review')
       end
 
       it 'creates a new review' do
@@ -47,7 +47,7 @@ describe ReviewsController do
       # end
     end
   end
-  # context 'logged out' do
+  # context 'when logged out,' do
   #   it 'does not let a guest create a review' do
   #     get '/reviews/new'
   #     expect(last_response.location).to include('/login')
