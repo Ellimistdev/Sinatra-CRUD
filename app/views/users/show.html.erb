@@ -1,7 +1,8 @@
 <h1>This is the show page for an individual instance of your model.</h1>
 
-<p>Reviews by <%= @user.username %>!</p>
-<% if @user.reviews %>
+   Logged in? <%= logged_in? %>
+<% unless @user.reviews.empty? %>
+  <p>Reviews by <%= @user.username %>!</p>
   <% reviews = @user.reviews %>
   <% reviews.each do |review| %>
     <%= review.content%>

@@ -7,7 +7,19 @@
     <link rel="stylesheet" href="/stylesheets/main.css" />
   </head>
   <body>
-    <div class="wrapper">
+    <% session_info.each do |data|%>
+     <p><%= data %></p>
+    <% end %>
+    <%= logged_in? %>
+    <% if logged_in?%>
+      <form method='post' action='/logout'>
+        <button type='submit' value='Log Out'>Log Out!</button>
+      </form>
+    <% else %>
+      <a href='/login' >Log In</a>
+      <a href='/signup'>Sign Up</a>
+    <% end %>
+    <div class="wrapper">    
         <%= yield %>
       <footer class="branding">
         <small>&copy; 2019 <strong>MovieReviews</strong></small>
