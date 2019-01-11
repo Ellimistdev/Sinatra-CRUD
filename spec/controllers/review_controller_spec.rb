@@ -1,9 +1,12 @@
 require_relative '../spec_helper'
 describe ReviewsController do
+  before(:each) do
+    @user = User.create(username: 'user', email: 'email', password: 'password')
+    @movie = Movie.create(name: 'The movie')
+    @review = Review.create(content: 'a review', rating: 5, movie_id: @movie.id, user_id: @user.id)
+  end
   context 'when logged in,' do
     before(:each) do
-      @user = User.create(username: 'user', email: 'email', password: 'password')
-      @movie = Movie.create(name: 'The movie')
       page.set_rack_session(user_id: @user.id)
     end
 
@@ -33,23 +36,43 @@ describe ReviewsController do
         expect(page.current_path).to eq("/movies/#{@movie.id}")
       end
 
-      # it 'does not allow empty reviews' do
-      #   params = {
-      #     content: '',
-      #     rating: 5,
-      #     movie_id: 1,
-      #     user_id: 1
-      #   }
-      #   post '/reviews', params
-      #   expect(Reviews.find_by(content: params[:content])).to eq(nil)
-      #   expect(page.current_path).to eq('/reviews/new')
-      # end
+      describe 'rejects review creation when' do
+        it 'content is blank' do
+          visit "/movies/#{@movie.id}"
+          fill_in(:content, with: '')
+          click_button 'submit'
+
+          expect(page.status_code).to eq(200)
+          expect(page.current_path).to eq('/movies/#{@movie.id}')
+        end
+
+        it 'content, movie_id, and user_id are identical' do
+          visit "/movies/#{@movie.id}"
+          fill_in(:content, with: @review.content)
+          select 5, from: :rating
+          click_button 'submit'
+
+          expect(page.status_code).to eq(200)
+          expect(page.current_path).to eq('/movies/#{@movie.id}')
+          expect(@movie.reviews.length).to eq(@movie.reviews.uniq.length)
+        end
+
+        it 'rating is blank' do
+          visit "/movies/#{@movie.id}"
+          fill_in(:rating, with: '')
+          click_button 'submit'
+
+          expect(page.status_code).to eq(200)
+          expect(page.current_path).to eq('/movies/#{@movie.id}')
+        end
+      end
     end
   end
-  # context 'when logged out,' do
-  #   it 'does not let a guest create a review' do
-  #     get '/reviews/new'
-  #     expect(last_response.location).to include('/login')
-  #   end
-  # end
+  context 'when logged out,' do
+    it 'does not display create a review form' do
+      visit "/movies/#{@movie.id}"
+      # might not work
+      expect(page.has_field?(:content)).to be_false
+    end
+  end
 end
