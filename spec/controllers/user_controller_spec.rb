@@ -57,11 +57,50 @@ describe UsersController do
         expect(page.body).to include(@user1.reviews.last[:content])
       end
 
+      it 'has link to movie for each review' do
+        visit "/users/#{@user1.id}"
+
+        expect(page.body).to have_link("/movies/#{@user1.reviews.first[:movie_id]}")
+        expect(page.body).to have_link("/movies/#{@user1.reviews.last[:movie_id]}")
+      end
+
       it 'says there are no reviews if user has no reviews' do
         visit "/users/#{@user_with_no_reviews.id}"
-        # binding.pry
         expect(page.body).to include("hasn't posted any reviews!")
       end
+
+      context 'when own review' do
+        it 'has link to edit each review' do
+          visit "/users/#{@user1.id}"
+
+          expect(page.body).to have_link("/reviews/#{@user1.reviews.first[:id]}/edit")
+          expect(page.body).to have_link("/reviews/#{@user1.reviews.last[:id]}/edit")
+        end
+
+        it 'has link to delete each review' do
+          visit "/users/#{@user1.id}"
+
+          expect(page.body).to have_link("/reviews/#{@user1.reviews.first[:id]}/delete")
+          expect(page.body).to have_link("/reviews/#{@user1.reviews.last[:id]}/delete")
+        end
+      end
+
+      context 'when not own review' do 
+        it 'does not have link to edit review' do
+          visit "/users/#{@user2.id}"
+  
+          expect(page.body).to_not have_link("/reviews/#{@user2.reviews.first[:id]}/edit")
+          expect(page.body).to_not have_link("/reviews/#{@user2.reviews.last[:id]}/edit")
+        end
+  
+        it 'does not have link to delete review' do
+          visit "/users/#{@user2.id}"
+  
+          expect(page.body).to_not have_link("/reviews/#{@user2.reviews.first[:id]}/delete")
+          expect(page.body).to_not have_link("/reviews/#{@user2.reviews.last[:id]}/delete")
+        end
+      end
+
     end
 
     describe 'there should be' do
@@ -130,6 +169,17 @@ describe UsersController do
         expect(page.status_code).to eq(200)
         expect(page.current_path).to eq('/signup')
       end
+
+      it 'inform user when login is invalid' do
+        visit '/login'
+        fill_in(:username, with: @user1.username)
+        fill_in(:password, with: 'not password')
+        click_button 'submit'
+
+        expect(page.status_code).to eq(200)
+        expect(page.current_path).to eq('/signup')
+        expect(page.body).to include('Invalid Login:')
+      end
     end
 
     describe 'signing up' do
@@ -172,6 +222,17 @@ describe UsersController do
         new_user = User.all.last
         expect(new_user.username).to eq(params[:username])
         expect(new_user.email).to eq(params[:email])
+      end
+
+      it 'informs user when signup is invalid' do
+        visit '/signup'
+        fill_in(:username, with: 'usernamez')
+        fill_in(:email, with: 'emailz')
+        click_button 'submit'
+
+        expect(page.status_code).to eq(200)
+        expect(page.current_path).to eq('/signup')
+        expect(page.body).to include('Invalid Registration:')
       end
     end
 

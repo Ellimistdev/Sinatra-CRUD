@@ -19,6 +19,12 @@ describe MoviesController do
       expect(page.body).to include(Movie.all.first[:name])
       expect(page.body).to include(Movie.all.last[:name])
     end
+
+    it 'has a link to each movie page' do
+      visit '/movies'
+      expect(page).to have_link("/movies/#{Movie.all.first[:id]}")
+      expect(page).to have_link("/movies/#{Movie.all.last[:id]}")
+    end
   end
 
   describe 'viewing a Movie page' do
@@ -31,6 +37,51 @@ describe MoviesController do
       visit '/movies/1'
       expect(page.body).to include(@movie.reviews.first[:content])
       expect(page.body).to include(@movie.reviews.last[:content])
+    end
+
+    it 'has link to user for each review' do
+      visit "/movies/1"
+
+      expect(page.body).to have_link("/users/#{@movie.reviews.first[:user_id]}")
+      expect(page.body).to have_link("/users/#{@movie.reviews.last[:user_id]}")
+    end
+
+    context 'when own review' do 
+      before(:each) do
+        page.set_rack_session(user_id: @user1.id)
+      end
+      it 'has link to edit each review' do
+        visit "/movies/1"
+
+        expect(page.body).to have_link("/reviews/#{u@ser1.reviews.first[:id]}/edit")
+        expect(page.body).to have_link("/reviews/#{@user1.reviews.last[:id]}/edit")
+      end
+
+      it 'has link to delete each review' do
+        visit "/movies/1"
+
+        expect(page.body).to have_link("/reviews/#{@user1.reviews.first[:id]}/delete")
+        expect(page.body).to have_link("/reviews/#{@user1.reviews.last[:id]}/delete")
+      end
+    end
+
+    context 'when do not own review' do
+      before(:each) do
+        page.set_rack_session(user_id: @user1.id)
+      end
+      it 'does not have link to edit review' do
+        visit "/movies/1"
+
+        expect(page.body).to_not have_link("/reviews/#{@user2.reviews.first[:id]}/edit")
+        expect(page.body).to_not have_link("/reviews/#{@user2.reviews.last[:id]}/edit")
+      end
+
+      it 'does not have link to delete review' do
+        visit "/movies/1"
+
+        expect(page.body).to_not have_link("/reviews/#{@user2.reviews.first[:id]}/delete")
+        expect(page.body).to_not have_link("/reviews/#{@user2.reviews.last[:id]}/delete")
+      end
     end
   end
 
@@ -58,6 +109,16 @@ describe MoviesController do
       click_button 'submit'
       movie = Movie.find_by(name: movie_name)
       expect(page.current_path).to eq("/movies/#{movie.id}")
+    end
+
+    it 'informs user when movie is invalid' do
+      visit '/movies/new'
+      fill_in(:name, with: '')
+      click_button 'submit'
+
+      expect(page.status_code).to eq(200)
+      expect(page.current_path).to eq('/movies/new')
+      expect(page.body).to include('Invalid Movie:')
     end
   end
 

@@ -108,41 +108,35 @@ review
 - Generate session key
 
 ### New Tests:
-- adding a movie redirects to the new movie/:id page
-- link to individual movie page is present on /movies
-- link to individual movie page is present on /user/:id review
-- when logged in
-    - review owned by user
-      - edit
-        - link to edit review is present on /movie/:id review 
-        - link to edit review is present on /user/:id review 
-        - user can edit review via /movie/:id review
-        - user can edit review via /user/:id review 
-      - delete
-        - link to delete review is present on /movie/:id review 
-        - link to delete review is present on /user/:id review 
-        - user can delete review via /movie/:id review 
-        - user can delete review via /user/:id review 
-    - not owned
-      - edit
-        - link to edit review is not present on /movie/:id review
-        - link to edit review is not present on /user/:id review
-        - user can not edit review via /movie/:id review
-        - user can not edit review via /user/:id review
-      - delete
-        - link to delete review is not present on /movie/:id review
-        - link to delete review is not present on /user/:id review
-        - user can not delete review via /movie/:id review
-        - user can not delete review via /user/:id review
-- when logged out
-    - link to delete review is not present on /user/:id review
-    - link to delete review is not present on /movie/:id review
-    - link to edit review is not present on /user/:id review 
-    - link to edit review is not present on /movie/:id review 
-- Inform user when invalid login
-- Inform user when invalid signup
-- Inform user when invalid review
-- Inform user when invalid movie
+- ~~link to individual movie page is present on /movies~~
+- ~~link to individual movie page is present on /user/:id review~~
+- ~~when logged in~~
+    - ~~review owned by user~~
+      - ~~edit~~
+        - ~~link to edit review is present on /movie/:id review~~ 
+        - ~~link to edit review is present on /user/:id review~~ 
+        - ~~user can edit review via /movie/:id review~~
+        - ~~user can edit review via /user/:id review~~
+      - ~~delete~~
+        - ~~link to delete review is present on /movie/:id review~~
+        - ~~link to delete review is present on /user/:id review~~
+        - ~~user can delete review via /movie/:id review~~ 
+        - ~~user can delete review via /user/:id review~~ 
+    - ~~not owned~~
+      - ~~edit~~
+        - ~~link to edit review is not present on /movie/:id review~~
+        - ~~link to edit review is not present on /user/:id review~~
+        - ~~user can not edit review via /movie/:id review~~
+        - ~~user can not edit review via /user/:id review~~
+      - ~~delete~~
+        - ~~link to delete review is not present on /movie/:id review~~
+        - ~~link to delete review is not present on /user/:id review~~
+        - ~~user can not delete review via /movie/:id review~~
+        - ~~user can not delete review via /user/:id review~~
+- ~~Inform user when invalid login~~
+- ~~Inform user when invalid signup~~
+- ~~Inform user when invalid review~~
+- ~~Inform user when invalid movie~~
 
 ### Clean Up:
 - del NOTES.md

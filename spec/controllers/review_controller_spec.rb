@@ -4,6 +4,7 @@ describe ReviewsController do
     @user = User.create(username: 'user', email: 'email', password: 'password')
     @movie = Movie.create(name: 'The movie')
     @review = Review.create(content: 'a review', rating: 5, movie_id: @movie.id, user_id: @user.id)
+    @review_unowned = Review.create(content: 'a review', rating: 5, movie_id: @movie.id, user_id: 2)
   end
   context 'when logged in,' do
     before(:each) do
@@ -36,6 +37,16 @@ describe ReviewsController do
         expect(page.current_path).to eq("/movies/#{@movie.id}")
       end
 
+      it 'informs user when review is invalid' do
+        visit "/movies/#{@movie.id}"
+        fill_in(:content, with: '')
+        click_button 'submit'
+
+        expect(page.status_code).to eq(200)
+        expect(page.current_path).to eq("/movies/#{@movie.id}")
+        expect(page.body).to include('Invalid Review:')
+      end
+
       describe 'rejects review creation when' do
         it 'content is blank' do
           visit "/movies/#{@movie.id}"
@@ -57,6 +68,34 @@ describe ReviewsController do
           expect(page.current_path).to eq("/movies/#{@movie.id}")
           expect(count).to eq(1)
         end
+      end
+    end
+
+    describe 'user can' do
+      it 'edit their own review' do 
+        update = 'updated review via page.driver patch'
+        page.driver.submit :patch, "/reviews/#{@review.id}", content: update
+        expect(@review[:content]).to eq(update)
+      end
+
+      it 'delete their own review' do
+        page.driver.submit :delete, "/reviews/#{@review.id}", nil
+        # @review is deleted, Review should only have @review_unowned
+        expect(Review.all.last)).to eq(@review_unowned)
+      end
+    end
+
+    describe 'user can not' do 
+      it "edit someone else's review" do 
+        update = 'updated review I do not own via page.driver patch'
+        page.driver.submit :patch, "/reviews/#{@review_unowned.id}", content: update
+        expect(@review_unowned[:content]).to_not eq(update)
+      end
+
+      it "delete someone else's review" do
+        page.driver.submit :delete, "/reviews/#{@review_unowned.id}", nil
+        # @review_unowned is not deleted
+        expect(Review.find_by(id: @review_unowned.id))).to be_truthy
       end
     end
   end
