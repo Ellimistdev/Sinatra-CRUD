@@ -6,12 +6,13 @@ class ReviewsController < ApplicationController
     identical = !!movie.reviews.detect { |review| review.content == params[:content] && review.user_id == session[:user_id] }
     redirect "/movies/#{params[:movie_id]}" if params.values.any?(&:empty?) || identical
 
-    review = Review.create(
+    review = Review.new(
       content: params[:content],
-      rating: params[:rating],
-      movie_id: params[:movie_id],
-      user_id: session[:user_id]
+      rating: params[:rating]
     )
+    review.reviewer = current_user
+    review.movie = Movie.find(params[:movie_id])
+    review.save
     redirect "/movies/#{review.movie_id}"
   end
 
