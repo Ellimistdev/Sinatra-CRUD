@@ -1,16 +1,26 @@
-<h1>This is the show page for an individual instance of your model.</h1>
-<p>Add a review!</p>
-<form method='post' action='/reviews'>
-  <% if @movie %>
+<h1><%= @movie.name %></h1>
+<% unless @movie.reviews.empty? %>
+   <% @movie.reviews.each do |review| %>
+    <%= review.content%>
+  <% end %> 
+<% else %>
+  <p><%= @movie.name %> has no reviews!</p>
+<% end %> 
+
+<% if logged_in? %>
+  <p>Add a review!</p>
+  <form method='post' action='/reviews'>
     <input type='hidden' name='movie_id' value='<%=@movie.id%>'> 
-  <% end %>
-  <input type='text' name='content'>
-  <select name="rating">
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-  </select>
-  <input type='submit' value='submit'>
-<form>
+    <input type='text' name='content'>
+    <select name="rating">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+    </select>
+    <input type='submit' value='submit'>
+  <form>
+<% else %>
+  <p>Log in to add a review!</p>
+<% end %>

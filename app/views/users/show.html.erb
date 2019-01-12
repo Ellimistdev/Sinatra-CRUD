@@ -3,8 +3,7 @@
    Logged in? <%= logged_in? %>
 <% unless @user.reviews.empty? %>
   <p>Reviews by <%= @user.username %>!</p>
-  <% reviews = @user.reviews %>
-  <% reviews.each do |review| %>
+  <% @user.reviews.each do |review| %>
     <%= review.content%>
   <% end %> 
 <% else %>

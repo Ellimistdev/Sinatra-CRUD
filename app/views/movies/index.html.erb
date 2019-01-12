@@ -1,1 +1,5 @@
 <h1>This is the Model's index page.</h1>
+ Here are some movies!
+<% @movies.each do |movie| %>
+  <%= movie.name %>
+<% end %>

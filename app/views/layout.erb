@@ -7,10 +7,6 @@
     <link rel="stylesheet" href="/stylesheets/main.css" />
   </head>
   <body>
-    <% session_info.each do |data|%>
-     <p><%= data %></p>
-    <% end %>
-    <%= logged_in? %>
     <% if logged_in?%>
       <form method='post' action='/logout'>
         <button type='submit' value='Log Out'>Log Out!</button>
