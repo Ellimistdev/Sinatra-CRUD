@@ -81,7 +81,7 @@ describe ReviewsController do
       it 'delete their own review' do
         page.driver.submit :delete, "/reviews/#{@review.id}", nil
         # @review is deleted, Review should only have @review_unowned
-        expect(Review.all.last)).to eq(@review_unowned)
+        expect(Review.all.last).to eq(@review_unowned)
       end
     end
 
@@ -95,7 +95,7 @@ describe ReviewsController do
       it "delete someone else's review" do
         page.driver.submit :delete, "/reviews/#{@review_unowned.id}", nil
         # @review_unowned is not deleted
-        expect(Review.find_by(id: @review_unowned.id))).to be_truthy
+        expect(Review.find_by(id: @review_unowned.id)).to be_truthy
       end
     end
   end

@@ -53,7 +53,7 @@ describe MoviesController do
       it 'has link to edit each review' do
         visit "/movies/1"
 
-        expect(page.body).to have_link("/reviews/#{u@ser1.reviews.first[:id]}/edit")
+        expect(page.body).to have_link("/reviews/#{@user1.reviews.first[:id]}/edit")
         expect(page.body).to have_link("/reviews/#{@user1.reviews.last[:id]}/edit")
       end
 
