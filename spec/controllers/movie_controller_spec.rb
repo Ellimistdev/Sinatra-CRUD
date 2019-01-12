@@ -13,7 +13,7 @@ describe MoviesController do
     Review.create(content: 'bad movie', rating: 1, user_id: @user2.id, movie_id: @movie2.id)
   end
 
-  describe 'viewing the homepage' do
+  describe 'viewing the movie index' do
     it 'lists all the movies' do
       visit '/movies'
       expect(page.body).to include(Movie.all.first[:name])
@@ -21,9 +21,10 @@ describe MoviesController do
     end
 
     it 'has a link to each movie page' do
+      movies = Movie.all
       visit '/movies'
-      expect(page).to have_link("/movies/#{Movie.all.first[:id]}")
-      expect(page).to have_link("/movies/#{Movie.all.last[:id]}")
+      expect(page).to have_link(movies.first.name, href: "/movies/#{movies.first[:id]}")
+      expect(page).to have_link(movies.last.name, href: "/movies/#{movies.last[:id]}")
     end
   end
 
@@ -41,27 +42,45 @@ describe MoviesController do
 
     it 'has link to user for each review' do
       visit "/movies/1"
-
-      expect(page.body).to have_link("/users/#{@movie.reviews.first[:user_id]}")
-      expect(page.body).to have_link("/users/#{@movie.reviews.last[:user_id]}")
+      first_user_id = @movie.reviews.first[:user_id]
+      last_user_id = @movie.reviews.last[:user_id]
+      expect(page).to have_link(@user1.username, href:"/users/#{first_user_id}")
+      expect(page).to have_link(@user2.username, href:"/users/#{last_user_id}")
     end
+  end
 
+  describe 'updating a review from the movie page,' do
     context 'when own review' do 
       before(:each) do
         page.set_rack_session(user_id: @user1.id)
       end
+
       it 'has link to edit each review' do
         visit "/movies/1"
-
-        expect(page.body).to have_link("/reviews/#{@user1.reviews.first[:id]}/edit")
-        expect(page.body).to have_link("/reviews/#{@user1.reviews.last[:id]}/edit")
+        relevant_reviews = @user1.reviews.select { |review| review[:movie_id] == 1 }
+        within '.current_user_actions' do
+          expect(page).to have_link(href: "/reviews/#{relevant_reviews.first[:id]}/edit")
+          expect(page).to have_link(href: "/reviews/#{relevant_reviews.last[:id]}/edit")
+        end
       end
 
-      it 'has link to delete each review' do
+      it 'has link to delete review by user1' do
         visit "/movies/1"
+        relevant_reviews = @user1.reviews.select { |review| review[:movie_id] == 1 }
+        within('.current_user_actions') do
+          # test to ensure this is @user1
+          expect(page).to have_button('delete review')
+        end
+      end
 
-        expect(page.body).to have_link("/reviews/#{@user1.reviews.first[:id]}/delete")
-        expect(page.body).to have_link("/reviews/#{@user1.reviews.last[:id]}/delete")
+      it 'has link to delete review by user2' do
+        page.set_rack_session(user_id: @user2.id)
+        visit "/movies/1"
+        relevant_reviews = @user2.reviews.select { |review| review[:movie_id] == 1 }
+        within('.current_user_actions') do
+          # test to ensure this is @user2
+          expect(page).to have_button('delete review')
+        end
       end
     end
 
@@ -69,18 +88,21 @@ describe MoviesController do
       before(:each) do
         page.set_rack_session(user_id: @user1.id)
       end
+
       it 'does not have link to edit review' do
         visit "/movies/1"
-
-        expect(page.body).to_not have_link("/reviews/#{@user2.reviews.first[:id]}/edit")
-        expect(page.body).to_not have_link("/reviews/#{@user2.reviews.last[:id]}/edit")
+        expect(page).to_not have_link('edit review', href: "/reviews/#{@user2.reviews.first[:id]}/edit")
+        expect(page).to_not have_link('edit review', href: "/reviews/#{@user2.reviews.last[:id]}/edit")
       end
+    end
 
+    context 'when guest, ' do
       it 'does not have link to delete review' do
         visit "/movies/1"
-
-        expect(page.body).to_not have_link("/reviews/#{@user2.reviews.first[:id]}/delete")
-        expect(page.body).to_not have_link("/reviews/#{@user2.reviews.last[:id]}/delete")
+        # this serves to test that the delete review button is not present 
+        # outside the div.current_user_actions as it should not be rendered
+        # there does not appear to be a 'without' capybara selector
+        expect(page).to_not have_button('delete review')
       end
     end
   end

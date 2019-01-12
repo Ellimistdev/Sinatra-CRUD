@@ -71,7 +71,7 @@ describe ReviewsController do
       end
     end
 
-    describe 'user can' do
+    describe 'user is allowed to' do
       it 'edit their own review' do 
         update = 'updated review via page.driver patch'
         page.driver.submit :patch, "/reviews/#{@review.id}", content: update
@@ -85,7 +85,7 @@ describe ReviewsController do
       end
     end
 
-    describe 'user can not' do 
+    describe 'user is not allowed to' do 
       it "edit someone else's review" do 
         update = 'updated review I do not own via page.driver patch'
         page.driver.submit :patch, "/reviews/#{@review_unowned.id}", content: update
@@ -96,6 +96,42 @@ describe ReviewsController do
         page.driver.submit :delete, "/reviews/#{@review_unowned.id}", nil
         # @review_unowned is not deleted
         expect(Review.find_by(id: @review_unowned.id)).to be_truthy
+      end
+    end
+
+    describe 'user has the ability to' do
+      it 'edit their own review' do 
+        update = 'updated review via form submission patch'
+        target_review_id = @user.reviews.first[:id]
+        visit "/reviews/#{target_review_id}/edit"
+        fill_in(:content, with: update)
+        click_button 'update'
+
+        expect(@review[:content]).to eq(update)
+      end
+
+      it 'delete their own review from movie page' do
+        target_movie_id = @user.reviews.first[:movie_id]
+        visit "/movies/#{target_movie_id}"
+
+        # find @user.reviews.first[:id] delete button
+        # click it
+        # @review is deleted, user's first review should not equal target id
+        expect(@user.reviews.first[:movie_id]).to_not eq(target_movie_id)
+        # page is reloaded
+        expect(page.current_path).to eq("/movies/#{target_movie_id}")        
+      end
+
+      it 'delete their own review from profile page' do
+        target_movie_id = @user.reviews.first[:movie_id]
+        visit "/users/#{@user.id}"
+
+        # find @user.reviews.first[:id] delete button
+        # click it
+        # @review is deleted, user's first review should not equal target id
+        expect(@user.reviews.first[:movie_id]).to_not eq(target_movie_id)
+        # page is reloaded
+        expect(page.current_path).to eq("/movies/#{target_movie_id}")
       end
     end
   end
