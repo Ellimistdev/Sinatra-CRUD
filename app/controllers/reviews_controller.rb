@@ -1,10 +1,5 @@
 # Manages reviews-based routing, helpers, sessions
 class ReviewsController < ApplicationController
-  # GET: /reviews/new
-  # get '/reviews/new' do
-  #   erb :'/reviews/new.html'
-  # end
-
   # POST: /reviews
   post '/reviews' do
     review = Review.create(
@@ -36,11 +31,6 @@ class ReviewsController < ApplicationController
   delete '/reviews/:id/delete' do
     # delete the review
     # redirect to /movie/:movie_id
-    redirect '/'
+    redirect :/
   end
-
-  # GET: /reviews
-  # get '/reviews' do
-  #   erb :'/reviews/index.html'
-  # end
 end

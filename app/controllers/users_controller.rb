@@ -7,14 +7,14 @@ class UsersController < ApplicationController
 
   post '/login' do
     user = User.find_by(username: params[:username])
-    redirect '/signup' unless user && user.authenticate(params[:password])
+    redirect :signup unless user && user.authenticate(params[:password])
     session[:user_id] = user.id
     redirect "/users/#{user.id}"
   end
 
   post '/logout' do
     session.destroy
-    redirect '/'
+    redirect :/
   end
 
   # shows all reviews by user
@@ -30,7 +30,7 @@ class UsersController < ApplicationController
 
   # create new user
   post '/signup' do
-    redirect '/signup' if params.values.any?(&:empty?) ||
+    redirect :signup if params.values.any?(&:empty?) ||
                           User.find_by(username: params[:username]) ||
                           User.find_by(email: params[:email])
     # there's no way that posting a clear password like this is secure
@@ -39,6 +39,6 @@ class UsersController < ApplicationController
       email: params[:email],
       password: params[:password]
     )
-    redirect '/login'
+    redirect :login
   end
 end
