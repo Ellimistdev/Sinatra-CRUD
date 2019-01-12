@@ -5,34 +5,23 @@ class MoviesController < ApplicationController
   end
 
   post '/movies' do
-    # create movie
-    # redirect '/movies/#{movie.id}'
-    redirect '/'
+    redirect '/movies/new' if params.values.any?(&:empty?) ||
+                              Movie.find_by(name: params[:name])
+    movie = Movie.create(
+      name: params[:name]
+    )
+    redirect "/movies/#{movie.id}"
   end
 
   get '/movies/:id' do
     # get reviews for movie
     @movie = Movie.find_by(id: params[:id])
-    # redirect '/movies/new' unless @movie
+    redirect :'movies/new' unless @movie
     erb :'/movies/show.html'
   end
 
-  # get '/movies' do
-  #   erb :'/movies/index.html'
-  # end
-
-  # GET: /movies/5/edit
-  # get '/movies/:id/edit' do
-  #   erb :'/movies/edit.html'
-  # end
-
-  # PATCH: /movies/5
-  # patch '/movies/:id' do
-  #   redirect '/movies/:id'
-  # end
-
-  # DELETE: /movies/5/delete
-  # delete '/movies/:id/delete' do
-  #   redirect '/movies'
-  # end
+  get '/movies' do
+    @movies = Movie.all
+    erb :'/movies/index.html'
+  end
 end

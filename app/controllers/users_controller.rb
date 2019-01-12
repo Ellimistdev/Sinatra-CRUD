@@ -20,6 +20,7 @@ class UsersController < ApplicationController
   # shows all reviews by user
   get '/users/:id' do
     @user = User.find_by(id: params[:id])
+    redirect back unless @user
     erb :'/users/show.html'
   end
 
@@ -31,8 +32,8 @@ class UsersController < ApplicationController
   # create new user
   post '/signup' do
     redirect :signup if params.values.any?(&:empty?) ||
-                          User.find_by(username: params[:username]) ||
-                          User.find_by(email: params[:email])
+                        User.find_by(username: params[:username]) ||
+                        User.find_by(email: params[:email])
     # there's no way that posting a clear password like this is secure
     User.create(
       username: params[:username],
