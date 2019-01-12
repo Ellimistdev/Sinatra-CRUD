@@ -246,4 +246,12 @@ describe UsersController do
       end
     end
   end
+
+  describe 'should redirect' do
+    it 'away from non-existant users' do
+      visit '/users/5'
+
+      expect(page.current_path).to eq('/')
+    end
+  end
 end

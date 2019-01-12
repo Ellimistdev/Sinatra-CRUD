@@ -15,9 +15,9 @@ describe MoviesController do
 
   describe 'viewing the homepage' do
     it 'lists all the movies' do
-      visit '/'
-      expect(page.body).to include(Movies.all.first[:name])
-      expect(page.body).to include(Movies.all.last[:name])
+      visit '/movies'
+      expect(page.body).to include(Movie.all.first[:name])
+      expect(page.body).to include(Movie.all.last[:name])
     end
   end
 
@@ -39,7 +39,7 @@ describe MoviesController do
       visit '/movies/new'
 
       expect(page.status_code).to eq(200)
-      expect(page.body).to include('Add a movie')
+      expect(page.body).to include('Add a Movie')
     end
 
     it 'creates a new movie' do
@@ -47,7 +47,7 @@ describe MoviesController do
       visit '/movies/new'
       fill_in(:name, with: movie_name)
       click_button 'submit'
-      movie = Movie.find_by(content: movie_name)
+      movie = Movie.find_by(name: movie_name)
       expect(movie).to_not be_nil
     end
 
@@ -56,7 +56,7 @@ describe MoviesController do
       visit '/movies/new'
       fill_in(:name, with: movie_name)
       click_button 'submit'
-      movie = Movie.find_by(content: movie_name)
+      movie = Movie.find_by(name: movie_name)
       expect(page.current_path).to eq("/movies/#{movie.id}")
     end
   end

@@ -43,7 +43,7 @@ describe ReviewsController do
           click_button 'submit'
 
           expect(page.status_code).to eq(200)
-          expect(page.current_path).to eq('/movies/#{@movie.id}')
+          expect(page.current_path).to eq("/movies/#{@movie.id}")
         end
 
         it 'content, movie_id, and user_id are identical' do
@@ -51,19 +51,11 @@ describe ReviewsController do
           fill_in(:content, with: @review.content)
           select 5, from: :rating
           click_button 'submit'
+          count = @movie.reviews.select { |review| review.content == @review.content }.length
 
           expect(page.status_code).to eq(200)
-          expect(page.current_path).to eq('/movies/#{@movie.id}')
-          expect(@movie.reviews.length).to eq(@movie.reviews.uniq.length)
-        end
-
-        it 'rating is blank' do
-          visit "/movies/#{@movie.id}"
-          fill_in(:rating, with: '')
-          click_button 'submit'
-
-          expect(page.status_code).to eq(200)
-          expect(page.current_path).to eq('/movies/#{@movie.id}')
+          expect(page.current_path).to eq("/movies/#{@movie.id}")
+          expect(count).to eq(1)
         end
       end
     end
@@ -72,7 +64,7 @@ describe ReviewsController do
     it 'does not display create a review form' do
       visit "/movies/#{@movie.id}"
       # might not work
-      expect(page.has_field?(:content)).to be_false
+      expect(page.has_field?(:content)).to be false
     end
   end
 end
