@@ -93,14 +93,13 @@ review
 
 ### Logic
 - seed db for testing
-- add link to movie page from /movies
-- add link to movie page from /user/:id review
-- add link to user page from /movies/:id review (review by: user)
+- ~~add link to movie page from /movies~~
 - add link to movie page from /user/:id review
 - add form to delete review from /user/:id review
-- add form to delete review from /movie/:id review
 - add form to edit review from /user/:id review
-- add form to edit review from /movie/:id review
+- ~~add link to user page from /movies/:id review (review by: user)~~
+- ~~add form to delete review from /movie/:id review~~
+- ~~add form to edit review from /movie/:id review~~
 - Inform user when invalid login
 - Inform user when invalid signup
 - Inform user when invalid review
