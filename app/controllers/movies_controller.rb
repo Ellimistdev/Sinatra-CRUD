@@ -14,9 +14,11 @@ class MoviesController < ApplicationController
   end
 
   get '/movies/:id' do
-    # get reviews for movie
     @movie = Movie.find_by(id: params[:id])
     redirect :'movies/new' unless @movie
+    
+    user_ids = @movie.reviews.map { |review| review[:user_id] }
+    @users = User.all.select { |user| user_ids.include?(user.id) }
     erb :'/movies/show.html'
   end
 

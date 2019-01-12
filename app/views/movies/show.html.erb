@@ -1,7 +1,17 @@
 <h1><%= @movie.name %></h1>
 <% unless @movie.reviews.empty? %>
    <% @movie.reviews.each do |review| %>
-    <%= review.content%>
+    <% user = @users.detect { |user| user.id == review.user_id } %>
+    <%= review.content%> by <a href='/users/<%= user.id %>'><%= user.username %></a>
+    <% if user == current_user %>
+      <div class='current_user_actions'>
+        <a href='/reviews/<%= review.id %>/edit'>edit review</a>
+        <form method='post' action='/reviews/<%= review.id %>/delete'>
+          <input type='hidden' name='_method' value='delete'>
+          <input type='submit' name='delete' value='delete review'>
+        </form>
+      </div>
+    <% end %>
   <% end %> 
 <% else %>
   <p><%= @movie.name %> has no reviews!</p>
