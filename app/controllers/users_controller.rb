@@ -1,7 +1,7 @@
 # Manages user-based routing, helpers, sessions
 class UsersController < ApplicationController
   get '/login' do
-    redirect "/users/#{session[:user_id]}" if session[:user_id]
+    redirect "/users/#{current_user.id}" if logged_in?
     erb :'/users/login.html'
   end
 
@@ -17,7 +17,6 @@ class UsersController < ApplicationController
     redirect :/
   end
 
-  # shows all reviews by user
   get '/users/:id' do
     @user = User.find_by(id: params[:id])
     redirect back unless @user
@@ -25,7 +24,7 @@ class UsersController < ApplicationController
   end
 
   get '/signup' do
-    redirect "/users/#{session[:user_id]}" if session[:user_id]
+    redirect "/users/#{current_user.id}" if logged_in?
     erb :'/users/new.html'
   end
 

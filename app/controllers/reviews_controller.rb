@@ -1,9 +1,8 @@
 # Manages reviews-based routing, helpers, sessions
 class ReviewsController < ApplicationController
-  # POST: /reviews
   post '/reviews' do
     movie = Movie.find_by(id: params[:movie_id])
-    identical = !!movie.reviews.detect { |review| review.content == params[:content] && review.user_id == session[:user_id] }
+    identical = !!movie.reviews.detect { |review| review.content == params[:content] && review.user_id == current_user.id }
     redirect "/movies/#{params[:movie_id]}" if params.values.any?(&:empty?) || identical
 
     review = Review.new(
