@@ -1,12 +1,14 @@
 # Manages movie-based routing, helpers, sessions
 class MoviesController < ApplicationController
   get '/movies/new' do
+    @error = params[:error]
     erb :'/movies/new.html'
   end
 
   post '/movies' do
-    redirect '/movies/new' if params.values.any?(&:empty?) ||
-                              Movie.find_by(name: params[:name])
+    if params.values.any?(&:empty?) || Movie.find_by(name: params[:name])
+      redirect '/movies/new?error=Invalid form submission, please try again:' 
+    end    
     movie = Movie.create(
       name: params[:name]
     )
@@ -19,6 +21,7 @@ class MoviesController < ApplicationController
     
     user_ids = @movie.reviews.map { |review| review[:user_id] }
     @users = User.all.select { |user| user_ids.include?(user.id) }
+    # binding.pry
     erb :'/movies/show.html'
   end
 

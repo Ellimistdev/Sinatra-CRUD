@@ -2,9 +2,16 @@ require_relative '../spec_helper'
 describe ReviewsController do
   before(:each) do
     @user = User.create(username: 'user', email: 'email', password: 'password')
+    @user2 = User.create(username: 'user2', email: 'email2', password: 'password2')
     @movie = Movie.create(name: 'The movie')
-    @review = Review.create(content: 'a review', rating: 5, movie_id: @movie.id, user_id: @user.id)
-    @review_unowned = Review.create(content: 'a review', rating: 5, movie_id: @movie.id, user_id: 2)
+    @review = Review.create(content: 'a review', rating: 5)
+    @review.reviewer = @user
+    @review.movie = @movie
+    @review.save
+    @review_unowned = Review.create(content: 'a different review', rating: 5)
+    @review_unowned.reviewer = @user2
+    @review_unowned.movie = @movie
+    @review_unowned.save
   end
   context 'when logged in,' do
     before(:each) do
@@ -13,8 +20,7 @@ describe ReviewsController do
 
     describe 'create new review' do
       it 'loads the new review form' do
-        visit "/movies/#{@movie.id}"
-
+        visit "/movies/1"
         expect(page.status_code).to eq(200)
         expect(page.body).to include('Add a review')
       end
@@ -24,7 +30,7 @@ describe ReviewsController do
           content: 'good movie',
           rating: 5
         }
-        visit "/movies/#{@movie.id}"
+        visit "/movies/1"
         fill_in(:content, with: params[:content])
         select params[:rating], from: :rating
         click_button 'submit'
@@ -34,38 +40,37 @@ describe ReviewsController do
         expect(review.movie_id).to eq(@movie.id)
         expect(review.content).to eq(params[:content])
         expect(review.rating).to eq(params[:rating])
-        expect(page.current_path).to eq("/movies/#{@movie.id}")
+        expect(page.current_path).to eq("/movies/1")
       end
 
       it 'informs user when review is invalid' do
-        visit "/movies/#{@movie.id}"
+        visit "/movies/1"
         fill_in(:content, with: '')
         click_button 'submit'
 
         expect(page.status_code).to eq(200)
-        expect(page.current_path).to eq("/movies/#{@movie.id}")
+        expect(page.current_path).to eq("/movies/1")
         expect(page.body).to include('Invalid Review:')
       end
 
       describe 'rejects review creation when' do
         it 'content is blank' do
-          visit "/movies/#{@movie.id}"
+          visit "/movies/1"
           fill_in(:content, with: '')
           click_button 'submit'
 
           expect(page.status_code).to eq(200)
-          expect(page.current_path).to eq("/movies/#{@movie.id}")
+          expect(page.current_path).to eq("/movies/1")
         end
 
         it 'content, movie_id, and user_id are identical' do
-          visit "/movies/#{@movie.id}"
+          visit "/movies/1"
           fill_in(:content, with: @review.content)
           select 5, from: :rating
           click_button 'submit'
           count = @movie.reviews.select { |review| review.content == @review.content }.length
-
           expect(page.status_code).to eq(200)
-          expect(page.current_path).to eq("/movies/#{@movie.id}")
+          expect(page.current_path).to eq("/movies/1")
           expect(count).to eq(1)
         end
       end

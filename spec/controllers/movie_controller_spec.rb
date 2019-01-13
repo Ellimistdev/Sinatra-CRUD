@@ -7,10 +7,22 @@ describe MoviesController do
     @user_with_no_reviews = User.create(username: 'user3', email: 'email3', password: 'password3')
     @movie = Movie.create(name: 'The movie')
     @movie2 = Movie.create(name: 'The movie, the sequel')
-    Review.create(content: 'good movie', rating: 5, user_id: @user1.id, movie_id: @movie.id)
-    Review.create(content: 'okay movie', rating: 3, user_id: @user1.id, movie_id: @movie2.id)
-    Review.create(content: 'meh movie', rating: 2, user_id: @user2.id, movie_id: @movie.id)
-    Review.create(content: 'bad movie', rating: 1, user_id: @user2.id, movie_id: @movie2.id)
+    review1 = Review.new(content: 'good movie', rating: 5)
+    review1.reviewer = @user1
+    review1.movie = @movie
+    review1.save
+    review2 = Review.new(content: 'okay movie', rating: 3)
+    review2.reviewer = @user1
+    review2.movie = @movie2
+    review2.save
+    review3 = Review.new(content: 'meh movie', rating: 2)
+    review3.reviewer = @user2
+    review3.movie = @movie
+    review3.save
+    review4 = Review.new(content: 'bad movie', rating: 1)
+    review4.reviewer = @user2
+    review4.movie = @movie2
+    review4.save
   end
 
   describe 'viewing the movie index' do
@@ -140,7 +152,7 @@ describe MoviesController do
 
       expect(page.status_code).to eq(200)
       expect(page.current_path).to eq('/movies/new')
-      expect(page.body).to include('Invalid Movie:')
+      expect(page.body).to include('Invalid form submission')
     end
   end
 

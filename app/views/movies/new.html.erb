@@ -1,4 +1,7 @@
 <h1>Add a Movie!</h1>
+<% if @error %>
+  <p><%=@error%></p>
+<% end %>
 <form method='post' action='/movies'>
   <input type='text' name='name'>
   <input type='submit' value='submit'>
