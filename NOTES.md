@@ -14,18 +14,18 @@
 
 ### Logic
 - seed db for testing
+- Generate session key
 - ~~add link to movie page from /movies~~
-- add link to movie page from /user/:id review
-- add form to delete review from /user/:id review
-- add form to edit review from /user/:id review
+- ~~add link to movie page from /user/:id review~~
+- ~~add form to delete review from /user/:id review~~
+- ~~add form to edit review from /user/:id review~~
 - ~~add link to user page from /movies/:id review (review by: user)~~
 - ~~add form to delete review from /movie/:id review~~
 - ~~add form to edit review from /movie/:id review~~
-- Inform user when invalid login
-- Inform user when invalid signup
-- Inform user when invalid review
-- Inform user when invalid movie
-- Generate session key
+- ~~Inform user when invalid login~~
+- ~~Inform user when invalid signup~~
+- ~~Inform user when invalid review~~
+- ~~Inform user when invalid movie~~
 
 ### New Tests:
 - ~~link to individual movie page is present on /movies~~
