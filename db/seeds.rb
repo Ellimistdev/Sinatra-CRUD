@@ -1,4 +1,2 @@
 Faker::UniqueGenerator.clear
-10.times do 
-  Fabricate(:review)
-end
+Fabricate.times(100, :review)
