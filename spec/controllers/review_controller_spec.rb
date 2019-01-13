@@ -1,20 +1,13 @@
 require_relative '../spec_helper'
 describe ReviewsController do
-  before(:each) do
-    @user = User.create(username: 'user', email: 'email', password: 'password')
-    @user2 = User.create(username: 'user2', email: 'email2', password: 'password2')
-    @movie = Movie.create(name: 'The movie')
-    @review = Review.create(content: 'a review', rating: 5)
-    @review.reviewer = @user
-    @review.movie = @movie
-    @review.save
-    @review_unowned = Review.create(content: 'a different review', rating: 5)
-    @review_unowned.reviewer = @user2
-    @review_unowned.movie = @movie
-    @review_unowned.save
+  before do
+    @users = User.all
+    @user = @users.first
+    @movies = Movie.all
+    @reviews = Review.all
   end
   context 'when logged in,' do
-    before(:each) do
+    before do
       page.set_rack_session(user_id: @user.id)
     end
 
@@ -37,7 +30,7 @@ describe ReviewsController do
         review = @user.reviews.find_by(content: params[:content])
 
         expect(review.user_id).to eq(@user.id)
-        expect(review.movie_id).to eq(@movie.id)
+        expect(review.movie_id).to eq(1)
         expect(review.content).to eq(params[:content])
         expect(review.rating).to eq(params[:rating])
         expect(page.current_path).to eq('/movies/1')
@@ -65,10 +58,11 @@ describe ReviewsController do
 
         it 'content, movie_id, and user_id are identical' do
           visit '/movies/1'
-          fill_in(:content, with: @review.content)
+          original_content = @movies.first.reviews.first[:content]
+          fill_in(:content, with: original_content)
           select 5, from: :rating
           click_button 'submit'
-          count = @movie.reviews.select { |review| review.content == @review.content }.length
+          count = @movies.first.reviews.select { |review| review.content == original_content }.length
           expect(page.status_code).to eq(200)
           expect(page.current_path).to eq('/movies/1')
           expect(count).to eq(1)
@@ -79,29 +73,30 @@ describe ReviewsController do
     describe 'user is allowed to' do
       it 'edit their own review' do
         update = 'updated review via page.driver patch'
-        page.driver.submit :patch, "/reviews/#{@review.id}", content: update
-        updated_review = Review.find(@review[:id])
+        page.driver.submit :patch, "/reviews/#{@reviews.first.id}", content: update
+        updated_review = Review.find(@reviews.first[:id])
         expect(updated_review[:content]).to eq(update)
       end
 
       it 'delete their own review' do
-        page.driver.submit :delete, "/reviews/#{@review.id}", nil
-        # @review is deleted, Review should only have @review_unowned
-        expect(Review.all.last).to eq(@review_unowned)
+        review = @users.first.reviews.first
+        page.driver.submit :delete, "/reviews/#{review.id}/delete", nil
+        expect(Review.exists?(review.id)).to be false
       end
     end
 
     describe 'user is not allowed to' do
       it "edit someone else's review" do
         update = 'updated review I do not own via page.driver patch'
-        page.driver.submit :patch, "/reviews/#{@review_unowned.id}", content: update
-        expect(@review_unowned[:content]).to_not eq(update)
+        review_unowned = @users.last.reviews.first
+        page.driver.submit :patch, "/reviews/#{review_unowned.id}", content: update
+        expect(review_unowned[:content]).to_not eq(update)
       end
 
       it "delete someone else's review" do
-        page.driver.submit :delete, "/reviews/#{@review_unowned.id}", nil
-        # @review_unowned is not deleted
-        expect(Review.find_by(id: @review_unowned.id)).to be_truthy
+        review_unowned = @users.last.reviews.first
+        page.driver.submit :delete, "/reviews/#{review_unowned.id}", nil
+        expect(Review.exists?(review_unowned.id)).to be true
       end
     end
 
@@ -129,20 +124,23 @@ describe ReviewsController do
       end
 
       it 'delete their own review from profile page' do
-        review_count = @user.reviews.length
-        visit "/users/#{@user.id}"
+        # since we're using seed data by suite, not test, grab a different user
+        user = @users[2]
+        page.set_rack_session(user_id: user.id)
+
+        review_count = user.reviews.length
+        visit "/users/#{user.id}"
         click_button('delete')
-        updated_user = User.find(@user.id)
+        updated_user = User.find(user.id)
         expect(updated_user.reviews.length).to_not eq(review_count)
         # page is reloaded
-        expect(page.current_path).to eq("/users/#{@user.id}")
+        expect(page.current_path).to eq("/users/#{user.id}")
       end
     end
   end
   context 'when logged out,' do
     it 'does not display create a review form' do
-      visit "/movies/#{@movie.id}"
-      # might not work
+      visit '/movies/1'
       expect(page.has_field?(:content)).to be false
     end
   end

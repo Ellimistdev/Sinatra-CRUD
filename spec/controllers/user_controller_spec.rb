@@ -2,39 +2,20 @@ require 'pry'
 require_relative '../spec_helper'
 
 describe UsersController do
-  before(:each) do
-    @user1 = User.create(username: 'user', email: 'email', password: 'password')
-    @user2 = User.create(username: 'user2', email: 'email2', password: 'password2')
-    @user_with_no_reviews = User.create(username: 'user3', email: 'email3', password: 'password3')
-    @movie = Movie.create(name: 'The movie')
-    @movie2 = Movie.create(name: 'The movie, the sequel')
-    review1 = Review.new(content: 'good movie', rating: 5)
-    review1.reviewer = @user1
-    review1.movie = @movie
-    review1.save
-    review2 = Review.new(content: 'okay movie', rating: 3)
-    review2.reviewer = @user1
-    review2.movie = @movie2
-    review2.save
-    review3 = Review.new(content: 'meh movie', rating: 2)
-    review3.reviewer = @user2
-    review3.movie = @movie
-    review3.save
-    review4 = Review.new(content: 'bad movie', rating: 1)
-    review4.reviewer = @user2
-    review4.movie = @movie2
-    review4.save
+  before(:example) do
+    @users = User.all
+    @user = @users[3]
+    @user_with_no_reviews = User.find_by(username: 'user3') || User.create(username: 'user3', email: 'email3', password: 'password3')
   end
 
   context 'when logged in,' do
-    before(:each) do
-      page.set_rack_session(user_id: @user1.id)
+    before do
+      page.set_rack_session(user_id: @user.id)
     end
 
     describe 'logging out' do
       it 'clears the session' do
         page.driver.submit :post, '/logout', nil
-
         expect(page.get_rack_session['user_id']).to be_nil
       end
     end
@@ -43,7 +24,7 @@ describe UsersController do
       it 'redirects to profile' do
         visit '/login'
         expect(page.status_code).to eq(200)
-        expect(page.current_path).to eq("/users/#{@user1.id}")
+        expect(page.current_path).to eq("/users/#{@user.id}")
       end
     end
 
@@ -51,28 +32,27 @@ describe UsersController do
       it 'redirects to profile' do
         visit '/signup'
         expect(page.status_code).to eq(200)
-        expect(page.current_path).to eq("/users/#{@user1.id}")
+        expect(page.current_path).to eq("/users/#{@user.id}")
       end
     end
 
     describe 'navigating to profile' do
       it 'loads /users/:id' do
-        visit "/users/#{@user1.id}"
+        visit "/users/#{@user.id}"
         expect(page.status_code).to eq(200)
-        expect(page.current_path).to eq("/users/#{@user1.id}")
+        expect(page.current_path).to eq("/users/#{@user.id}")
       end
 
       it 'displays all user reviews' do
-        visit "/users/#{@user1.id}"
-
-        expect(page.body).to include(@user1.reviews.first[:content])
-        expect(page.body).to include(@user1.reviews.last[:content])
+        visit "/users/#{@user.id}"
+        expect(page.body).to include(@user.reviews.first[:content])
+        expect(page.body).to include(@user.reviews.last[:content])
       end
 
       it 'has link to movie for each review' do
-        visit "/users/#{@user1.id}"
-        expect(page).to have_link(href: "/movies/#{@user1.reviews.first[:movie_id]}")
-        expect(page).to have_link(href: "/movies/#{@user1.reviews.last[:movie_id]}")
+        visit "/users/#{@user.id}"
+        expect(page).to have_link(href: "/movies/#{@user.reviews.first[:movie_id]}")
+        expect(page).to have_link(href: "/movies/#{@user.reviews.last[:movie_id]}")
       end
 
       it 'says there are no reviews if user has no reviews' do
@@ -82,14 +62,14 @@ describe UsersController do
 
       context 'when own review' do
         it 'has link to edit each review' do
-          visit "/users/#{@user1.id}"
+          visit "/users/#{@user.id}"
 
-          expect(page).to have_link(href: "/reviews/#{@user1.reviews.first[:id]}/edit")
-          expect(page).to have_link(href: "/reviews/#{@user1.reviews.last[:id]}/edit")
+          expect(page).to have_link(href: "/reviews/#{@user.reviews.first[:id]}/edit")
+          expect(page).to have_link(href: "/reviews/#{@user.reviews.last[:id]}/edit")
         end
 
         it 'has link to delete each review' do
-          visit "/users/#{@user1.id}"
+          visit "/users/#{@user.id}"
 
           expect(page).to have_button('delete review')
         end
@@ -97,14 +77,15 @@ describe UsersController do
 
       context 'when not own review' do
         it 'does not have link to edit review' do
-          visit "/users/#{@user2.id}"
+          other_user = @users.find(@user.id + 1)
+          visit "/users/#{other_user.id}"
 
-          expect(page).to_not have_link(href: "/reviews/#{@user2.reviews.first[:id]}/edit")
-          expect(page).to_not have_link(href: "/reviews/#{@user2.reviews.last[:id]}/edit")
+          expect(page).to_not have_link(href: "/reviews/#{other_user.reviews.first[:id]}/edit")
+          expect(page).to_not have_link(href: "/reviews/#{other_user.reviews.last[:id]}/edit")
         end
 
         it 'does not have link to delete review' do
-          visit "/users/#{@user2.id}"
+          visit "/users/#{@user.id + 1}"
 
           expect(page).to_not have_button('delete review')
         end
@@ -139,38 +120,39 @@ describe UsersController do
 
       it 'logs in an existing user' do
         visit '/login'
-        fill_in(:username, with: @user1.username)
-        fill_in(:password, with: 'password')
+        fill_in(:username, with: @user_with_no_reviews.username)
+        fill_in(:password, with: 'password3')
         click_button 'submit'
+        # binding.pry
         # The 'user_id' key is saved as a string in the rack_session_access gem
-        expect(page.get_rack_session['user_id']).to eq(@user1.id)
+        expect(page.get_rack_session['user_id']).to eq(@user_with_no_reviews.id)
       end
 
       it "redirects to the user's profile page" do
         visit '/login'
-        fill_in(:username, with: @user1.username)
-        fill_in(:password, with: 'password')
+        fill_in(:username, with: @user_with_no_reviews.username)
+        fill_in(:password, with: 'password3')
         click_button 'submit'
         expect(page.status_code).to eq(200)
-        expect(page.current_path).to eq("/users/#{@user1.id}")
+        expect(page.current_path).to eq("/users/#{@user_with_no_reviews.id}")
       end
 
       it 'persists through page loads' do
         visit '/login'
-        fill_in(:username, with: @user1.username)
-        fill_in(:password, with: 'password')
+        fill_in(:username, with: @user_with_no_reviews.username)
+        fill_in(:password, with: 'password3')
         click_button 'submit'
         visit '/users/1'
         visit '/'
         visit '/login'
         # The 'user_id' key is saved as a string in the rack_session_access gem
-        expect(page.current_path).to eq("/users/#{@user1.id}")
-        expect(page.get_rack_session['user_id']).to eq(@user1.id)
+        expect(page.current_path).to eq("/users/#{@user_with_no_reviews.id}")
+        expect(page.get_rack_session['user_id']).to eq(@user_with_no_reviews.id)
       end
 
       it 'rejects invalid log in' do
         visit '/login'
-        fill_in(:username, with: @user1.username)
+        fill_in(:username, with: @user.username)
         fill_in(:password, with: 'not password')
         click_button 'submit'
 
@@ -180,7 +162,7 @@ describe UsersController do
 
       it 'inform user when login is invalid' do
         visit '/login'
-        fill_in(:username, with: @user1.username)
+        fill_in(:username, with: @user.username)
         fill_in(:password, with: 'not password')
         click_button 'submit'
 
@@ -277,7 +259,7 @@ describe UsersController do
 
       it 'username exists' do
         visit '/signup'
-        fill_in(:username, with: @user1.username)
+        fill_in(:username, with: @user.username)
         fill_in(:email, with: 'emailz')
         fill_in(:password, with: 'passwordz')
         click_button 'submit'
@@ -289,7 +271,7 @@ describe UsersController do
       it 'email exists' do
         visit '/signup'
         fill_in(:username, with: 'name')
-        fill_in(:email, with: @user1.email)
+        fill_in(:email, with: @user.email)
         fill_in(:password, with: 'passwordz')
         click_button 'submit'
 
@@ -318,7 +300,7 @@ describe UsersController do
 
   describe 'should redirect' do
     it 'away from non-existant users' do
-      visit '/users/5'
+      visit '/users/500'
 
       expect(page.current_path).to eq('/')
     end
