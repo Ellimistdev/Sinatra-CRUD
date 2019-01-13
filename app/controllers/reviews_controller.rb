@@ -20,19 +20,19 @@ class ReviewsController < ApplicationController
   end
 
   get '/reviews/:id/edit' do
+    @review = Review.find(params[:id])
     erb :'/reviews/edit.html'
   end
 
-  # PATCH: /reviews/5
   patch '/reviews/:id' do
-    # update review
+    review = Review.find(params[:id])
+    review.update(content: params[:content], rating: params[:rating])
     redirect '/reviews/:id'
   end
 
-  # DELETE: /reviews/5/delete
   delete '/reviews/:id/delete' do
-    # delete the review
-    # redirect to /movie/:movie_id
-    redirect :/
+    review = Review.find_by(id: params[:id])
+    review.destroy if review.reviewer == current_user
+    redirect back
   end
 end

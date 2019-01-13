@@ -1,1 +1,13 @@
-<h1>Insert the form to edit an instance of your model here.</h1>
+<h1>Edit your review!</h1>
+<form method='post' action='/reviews/<%= @review.id %>'>
+    <input type='hidden' id='hidden' name='_method' value='patch'> 
+    <input type='text' name='content' value='<%= @review.content %>'>
+    <select name='rating' value='<%= @review.rating %>'>
+      <option value='1'>1</option>
+      <option value='2'>2</option>
+      <option value='3'>3</option>
+      <option value='4'>4</option>
+      <option value='5'>5</option>
+    </select>
+    <input type='submit' value='update'>
+  <form>
