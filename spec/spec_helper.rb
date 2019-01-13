@@ -16,11 +16,10 @@ RSpec.configure do |config|
   config.include Rack::Test::Methods
   config.include Capybara::DSL
   DatabaseCleaner.strategy = :truncation
-  
-  
+
   config.before(:suite) do
     DatabaseCleaner.clean
-    load "./db/seeds.rb"
+    load './db/seeds.rb'
   end
 
   config.after(:suite) do

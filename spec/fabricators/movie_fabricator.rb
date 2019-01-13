@@ -1,3 +1,3 @@
 Fabricator(:movie) do
-  name { Faker::Book.unique.title}
+  name { Faker::Book.unique.title }
 end
