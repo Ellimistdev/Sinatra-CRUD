@@ -190,7 +190,7 @@ describe UsersController do
 
         expect(page.status_code).to eq(200)
         expect(page.current_path).to eq('/signup')
-        expect(page.body).to include('Invalid Login:')
+        expect(page.body).to include('Invalid form submission')
       end
     end
 
@@ -244,7 +244,7 @@ describe UsersController do
 
         expect(page.status_code).to eq(200)
         expect(page.current_path).to eq('/signup')
-        expect(page.body).to include('Invalid Registration:')
+        expect(page.body).to include('Invalid form submission')
       end
     end
 

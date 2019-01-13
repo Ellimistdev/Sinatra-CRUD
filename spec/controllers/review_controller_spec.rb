@@ -44,13 +44,13 @@ describe ReviewsController do
       end
 
       it 'informs user when review is invalid' do
-        visit "/movies/1"
+        visit '/movies/1'
         fill_in(:content, with: '')
         click_button 'submit'
 
         expect(page.status_code).to eq(200)
-        expect(page.current_path).to eq("/movies/1")
-        expect(page.body).to include('Invalid Review:')
+        expect(page.current_path).to eq('/movies/1')
+        expect(page.body).to include('Invalid form submission')
       end
 
       describe 'rejects review creation when' do

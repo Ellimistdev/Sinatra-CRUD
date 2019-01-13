@@ -3,7 +3,7 @@ class ReviewsController < ApplicationController
   post '/reviews' do
     movie = Movie.find_by(id: params[:movie_id])
     identical = !!movie.reviews.detect { |review| review.content == params[:content] && review.user_id == current_user.id }
-    redirect "/movies/#{params[:movie_id]}" if params.values.any?(&:empty?) || identical
+    redirect "/movies/#{params[:movie_id]}?error=Invalid form submission, please try again:" if params.values.any?(&:empty?) || identical
 
     review = Review.new(
       content: params[:content],
@@ -15,12 +15,10 @@ class ReviewsController < ApplicationController
     redirect "/movies/#{review.movie_id}"
   end
 
-  # GET: /reviews/5
   get '/reviews/:id' do
     erb :'/reviews/show.html'
   end
 
-  # GET: /reviews/5/edit
   get '/reviews/:id/edit' do
     erb :'/reviews/edit.html'
   end

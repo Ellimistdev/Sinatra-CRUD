@@ -2,7 +2,7 @@
 <% unless @movie.reviews.empty? %>
    <% @movie.reviews.each do |review| %>
     <% user = @users.detect { |user| user.id == review.user_id } %>
-    <%= review.content%> by <a href='/users/<%= user.id %>'><%= user.username %></a>
+    <p><%= review.content%> by <a href='/users/<%= user.id %>'><%= user.username %></a></p>
     <% if user == current_user %>
       <div class='current_user_actions'>
         <a href='/reviews/<%= review.id %>/edit'>edit review</a>
@@ -19,15 +19,18 @@
 
 <% if logged_in? %>
   <p>Add a review!</p>
+  <% if @error %>
+    <p><%=@error%></p>
+  <% end %>
   <form method='post' action='/reviews'>
     <input type='hidden' name='movie_id' value='<%=@movie.id%>'> 
     <input type='text' name='content'>
-    <select name="rating">
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5">5</option>
+    <select name='rating'>
+      <option value='1'>1</option>
+      <option value='2'>2</option>
+      <option value='3'>3</option>
+      <option value='4'>4</option>
+      <option value='5'>5</option>
     </select>
     <input type='submit' value='submit'>
   <form>
