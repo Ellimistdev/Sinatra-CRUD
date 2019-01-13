@@ -48,16 +48,20 @@ describe MoviesController do
       it 'has link to edit each review' do
         visit '/movies/1'
         relevant_reviews = User.find(1).reviews.select { |review| review[:movie_id] == 1 }
-        within '.current_user_actions' do
-          expect(page).to have_link(href: "/reviews/#{relevant_reviews.first[:id]}/edit")
-          expect(page).to have_link(href: "/reviews/#{relevant_reviews.last[:id]}/edit")
+        relevant_reviews.each do |review|
+          within ".current_user_actions_review_#{review.id}" do
+            expect(page).to have_link(href: "/reviews/#{review.id}/edit")
+          end
         end
       end
 
       it 'has link to delete review by user1' do
         visit '/movies/1'
-        within('.current_user_actions') do
-          expect(page).to have_button('delete review')
+        relevant_reviews = User.find(1).reviews.select { |review| review[:movie_id] == 1 }
+        relevant_reviews.each do |review|
+          within ".current_user_actions_review_#{review.id}" do
+            expect(page).to have_button('delete review')
+          end
         end
       end
     end

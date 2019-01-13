@@ -116,7 +116,9 @@ describe ReviewsController do
         target_movie_id = @user.reviews.first[:movie_id]
         review_count = @user.reviews.length
         visit "/movies/#{target_movie_id}"
-        click_button('delete')
+        within ".current_user_actions_review_#{@user.reviews.first[:id]}" do
+          click_button('delete')
+        end
         updated_user = User.find(@user.id)
         expect(updated_user.reviews.length).to_not eq(review_count)
         # page is reloaded
@@ -130,7 +132,9 @@ describe ReviewsController do
 
         review_count = user.reviews.length
         visit "/users/#{user.id}"
-        click_button('delete')
+        within ".current_user_actions_review_#{user.reviews.first[:id]}" do
+          click_button('delete')
+        end
         updated_user = User.find(user.id)
         expect(updated_user.reviews.length).to_not eq(review_count)
         # page is reloaded

@@ -4,7 +4,7 @@
     <% user = @users.detect { |user| user.id == review.user_id } %>
     <p><%= review.content%> by <a href='/users/<%= user.id %>'><%= user.username %></a></p>
     <% if user == current_user %>
-      <div class='current_user_actions'>
+      <div class='current_user_actions_review_<%=review.id%>'>
         <a href='/reviews/<%= review.id %>/edit'>edit review</a>
         <form method='post' action='/reviews/<%= review.id %>/delete'>
           <input type='hidden' name='_method' value='delete'>
