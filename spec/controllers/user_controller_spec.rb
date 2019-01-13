@@ -71,9 +71,8 @@ describe UsersController do
 
       it 'has link to movie for each review' do
         visit "/users/#{@user1.id}"
-
-        expect(page.body).to have_link("/movies/#{@user1.reviews.first[:movie_id]}")
-        expect(page.body).to have_link("/movies/#{@user1.reviews.last[:movie_id]}")
+        expect(page).to have_link(href: "/movies/#{@user1.reviews.first[:movie_id]}")
+        expect(page).to have_link(href: "/movies/#{@user1.reviews.last[:movie_id]}")
       end
 
       it 'says there are no reviews if user has no reviews' do
@@ -85,34 +84,31 @@ describe UsersController do
         it 'has link to edit each review' do
           visit "/users/#{@user1.id}"
 
-          expect(page.body).to have_link("/reviews/#{@user1.reviews.first[:id]}/edit")
-          expect(page.body).to have_link("/reviews/#{@user1.reviews.last[:id]}/edit")
+          expect(page).to have_link(href: "/reviews/#{@user1.reviews.first[:id]}/edit")
+          expect(page).to have_link(href: "/reviews/#{@user1.reviews.last[:id]}/edit")
         end
 
         it 'has link to delete each review' do
           visit "/users/#{@user1.id}"
 
-          expect(page.body).to have_link("/reviews/#{@user1.reviews.first[:id]}/delete")
-          expect(page.body).to have_link("/reviews/#{@user1.reviews.last[:id]}/delete")
+          expect(page).to have_button('delete review')
         end
       end
 
-      context 'when not own review' do 
+      context 'when not own review' do
         it 'does not have link to edit review' do
           visit "/users/#{@user2.id}"
-  
-          expect(page.body).to_not have_link("/reviews/#{@user2.reviews.first[:id]}/edit")
-          expect(page.body).to_not have_link("/reviews/#{@user2.reviews.last[:id]}/edit")
+
+          expect(page).to_not have_link(href: "/reviews/#{@user2.reviews.first[:id]}/edit")
+          expect(page).to_not have_link(href: "/reviews/#{@user2.reviews.last[:id]}/edit")
         end
-  
+
         it 'does not have link to delete review' do
           visit "/users/#{@user2.id}"
-  
-          expect(page.body).to_not have_link("/reviews/#{@user2.reviews.first[:id]}/delete")
-          expect(page.body).to_not have_link("/reviews/#{@user2.reviews.last[:id]}/delete")
+
+          expect(page).to_not have_button('delete review')
         end
       end
-
     end
 
     describe 'there should be' do

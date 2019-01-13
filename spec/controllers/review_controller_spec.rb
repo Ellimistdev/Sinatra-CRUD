@@ -20,7 +20,7 @@ describe ReviewsController do
 
     describe 'create new review' do
       it 'loads the new review form' do
-        visit "/movies/1"
+        visit '/movies/1'
         expect(page.status_code).to eq(200)
         expect(page.body).to include('Add a review')
       end
@@ -30,7 +30,7 @@ describe ReviewsController do
           content: 'good movie',
           rating: 5
         }
-        visit "/movies/1"
+        visit '/movies/1'
         fill_in(:content, with: params[:content])
         select params[:rating], from: :rating
         click_button 'submit'
@@ -40,7 +40,7 @@ describe ReviewsController do
         expect(review.movie_id).to eq(@movie.id)
         expect(review.content).to eq(params[:content])
         expect(review.rating).to eq(params[:rating])
-        expect(page.current_path).to eq("/movies/1")
+        expect(page.current_path).to eq('/movies/1')
       end
 
       it 'informs user when review is invalid' do
@@ -55,32 +55,33 @@ describe ReviewsController do
 
       describe 'rejects review creation when' do
         it 'content is blank' do
-          visit "/movies/1"
+          visit '/movies/1'
           fill_in(:content, with: '')
           click_button 'submit'
 
           expect(page.status_code).to eq(200)
-          expect(page.current_path).to eq("/movies/1")
+          expect(page.current_path).to eq('/movies/1')
         end
 
         it 'content, movie_id, and user_id are identical' do
-          visit "/movies/1"
+          visit '/movies/1'
           fill_in(:content, with: @review.content)
           select 5, from: :rating
           click_button 'submit'
           count = @movie.reviews.select { |review| review.content == @review.content }.length
           expect(page.status_code).to eq(200)
-          expect(page.current_path).to eq("/movies/1")
+          expect(page.current_path).to eq('/movies/1')
           expect(count).to eq(1)
         end
       end
     end
 
     describe 'user is allowed to' do
-      it 'edit their own review' do 
+      it 'edit their own review' do
         update = 'updated review via page.driver patch'
         page.driver.submit :patch, "/reviews/#{@review.id}", content: update
-        expect(@review[:content]).to eq(update)
+        updated_review = Review.find(@review[:id])
+        expect(updated_review[:content]).to eq(update)
       end
 
       it 'delete their own review' do
@@ -90,8 +91,8 @@ describe ReviewsController do
       end
     end
 
-    describe 'user is not allowed to' do 
-      it "edit someone else's review" do 
+    describe 'user is not allowed to' do
+      it "edit someone else's review" do
         update = 'updated review I do not own via page.driver patch'
         page.driver.submit :patch, "/reviews/#{@review_unowned.id}", content: update
         expect(@review_unowned[:content]).to_not eq(update)
@@ -105,38 +106,36 @@ describe ReviewsController do
     end
 
     describe 'user has the ability to' do
-      it 'edit their own review' do 
+      it 'edit their own review' do
         update = 'updated review via form submission patch'
         target_review_id = @user.reviews.first[:id]
         visit "/reviews/#{target_review_id}/edit"
         fill_in(:content, with: update)
         click_button 'update'
+        updated_review = Review.find(target_review_id)
 
-        expect(@review[:content]).to eq(update)
+        expect(updated_review[:content]).to eq(update)
       end
 
       it 'delete their own review from movie page' do
         target_movie_id = @user.reviews.first[:movie_id]
+        review_count = @user.reviews.length
         visit "/movies/#{target_movie_id}"
-
-        # find @user.reviews.first[:id] delete button
-        # click it
-        # @review is deleted, user's first review should not equal target id
-        expect(@user.reviews.first[:movie_id]).to_not eq(target_movie_id)
+        click_button('delete')
+        updated_user = User.find(@user.id)
+        expect(updated_user.reviews.length).to_not eq(review_count)
         # page is reloaded
-        expect(page.current_path).to eq("/movies/#{target_movie_id}")        
+        expect(page.current_path).to eq("/movies/#{target_movie_id}")
       end
 
       it 'delete their own review from profile page' do
-        target_movie_id = @user.reviews.first[:movie_id]
+        review_count = @user.reviews.length
         visit "/users/#{@user.id}"
-
-        # find @user.reviews.first[:id] delete button
-        # click it
-        # @review is deleted, user's first review should not equal target id
-        expect(@user.reviews.first[:movie_id]).to_not eq(target_movie_id)
+        click_button('delete')
+        updated_user = User.find(@user.id)
+        expect(updated_user.reviews.length).to_not eq(review_count)
         # page is reloaded
-        expect(page.current_path).to eq("/movies/#{target_movie_id}")
+        expect(page.current_path).to eq("/users/#{@user.id}")
       end
     end
   end
