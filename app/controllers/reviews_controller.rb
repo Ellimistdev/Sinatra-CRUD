@@ -15,10 +15,6 @@ class ReviewsController < ApplicationController
     redirect "/movies/#{review.movie_id}"
   end
 
-  get '/reviews/:id' do
-    erb :'/reviews/show.html'
-  end
-
   get '/reviews/:id/edit' do
     @review = Review.find(params[:id])
     erb :'/reviews/edit.html'
@@ -27,7 +23,7 @@ class ReviewsController < ApplicationController
   patch '/reviews/:id' do
     review = Review.find(params[:id])
     review.update(content: params[:content], rating: params[:rating])
-    redirect '/reviews/:id'
+    redirect "/movies/#{review.movie_id}"
   end
 
   delete '/reviews/:id/delete' do

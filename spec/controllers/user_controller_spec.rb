@@ -122,7 +122,7 @@ describe UsersController do
         visit '/login'
         fill_in(:username, with: @user_with_no_reviews.username)
         fill_in(:password, with: 'password3')
-        click_button 'submit'
+        click_button 'Log in'
         # binding.pry
         # The 'user_id' key is saved as a string in the rack_session_access gem
         expect(page.get_rack_session['user_id']).to eq(@user_with_no_reviews.id)
@@ -132,7 +132,7 @@ describe UsersController do
         visit '/login'
         fill_in(:username, with: @user_with_no_reviews.username)
         fill_in(:password, with: 'password3')
-        click_button 'submit'
+        click_button 'Log in'
         expect(page.status_code).to eq(200)
         expect(page.current_path).to eq("/users/#{@user_with_no_reviews.id}")
       end
@@ -141,7 +141,7 @@ describe UsersController do
         visit '/login'
         fill_in(:username, with: @user_with_no_reviews.username)
         fill_in(:password, with: 'password3')
-        click_button 'submit'
+        click_button 'Log in'
         visit '/users/1'
         visit '/'
         visit '/login'
@@ -154,7 +154,7 @@ describe UsersController do
         visit '/login'
         fill_in(:username, with: @user.username)
         fill_in(:password, with: 'not password')
-        click_button 'submit'
+        click_button 'Log in'
 
         expect(page.status_code).to eq(200)
         expect(page.current_path).to eq('/login')
@@ -164,7 +164,7 @@ describe UsersController do
         visit '/login'
         fill_in(:username, with: @user.username)
         fill_in(:password, with: 'not password')
-        click_button 'submit'
+        click_button 'Log in'
 
         expect(page.status_code).to eq(200)
         expect(page.current_path).to eq('/login')
@@ -176,7 +176,7 @@ describe UsersController do
       it "loads '/signup'" do
         visit '/signup'
         expect(page.status_code).to eq(200)
-        expect(page.body).to include('Sign up')
+        expect(page.body).to include('Create an account')
       end
 
       it "redirects to '/login' after signing up" do

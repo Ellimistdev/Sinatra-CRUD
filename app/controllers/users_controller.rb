@@ -17,7 +17,7 @@ class UsersController < ApplicationController
 
   post '/logout' do
     session.destroy
-    redirect :/
+    redirect back
   end
 
   get '/users/:id' do
@@ -31,10 +31,9 @@ class UsersController < ApplicationController
   get '/signup' do
     redirect "/users/#{current_user.id}" if logged_in?
     @error = params[:error]
-    erb :'/users/new.html'
+    erb :'/users/signup.html'
   end
 
-  # create new user
   post '/signup' do
     if params.values.any?(&:empty?) ||
        User.find_by(username: params[:username]) ||
