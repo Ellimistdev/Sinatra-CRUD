@@ -1,7 +1,7 @@
 # Sinatra CRUD
 
 This project models a Movie reviews domain with User registration, authentication, and the following relationships: 
-![Model of Database](https://cdn.buttercms.com/zKzZqfr4TCd7fL26dbPQ)
+![Model of Database](https://cdn.buttercms.com/UNuAKvPfRfyUS9lNvgYg)
 
 ## Installation
 
