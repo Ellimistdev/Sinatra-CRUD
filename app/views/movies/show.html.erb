@@ -12,26 +12,29 @@
         </form>
       </div>
     <% end %>
+    <hr>
   <% end %> 
 <% else %>
   <p><%= @movie.name %> has no reviews!</p>
 <% end %> 
 
 <% if logged_in? %>
-  <p>Add a review!</p>
+  <h4>Add a review!</h4>
   <% if @error %>
     <p><%=@error%></p>
   <% end %>
   <form method='post' action='/reviews'>
     <input type='hidden' name='movie_id' value='<%=@movie.id%>'> 
-    <input type='text' name='content'>
+    <label>Content:</label><br>
+    <input type='text' name='content'><br>
+    <label>Rating:</label><br>
     <select name='rating'>
       <option value='1'>1</option>
       <option value='2'>2</option>
       <option value='3'>3</option>
       <option value='4'>4</option>
       <option value='5'>5</option>
-    </select>
+    </select><br>
     <input type='submit' value='submit'>
   <form>
 <% else %>

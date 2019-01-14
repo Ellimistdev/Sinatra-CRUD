@@ -1,5 +1,8 @@
-<h1>This is the Model's index page.</h1>
- Here are some movies!
-<% @movies.each do |movie| %>
-  <a href='/movies/<%= movie.id %>'><%= movie.name %></a>
-<% end %>
+<h1>Here are some movies!</h1> 
+ <ul style='columns: 4'>
+  <% @movies.each do |movie| %>
+    <li><a href='/movies/<%= movie.id %>'><%= movie.name %></a></li>
+  <% end %>
+</ul>
+<p>Don't see your movie?</p> 
+<p><a href='/movies/new'>Add a movie!</a></p>
