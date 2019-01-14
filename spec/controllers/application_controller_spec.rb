@@ -1,9 +1,9 @@
 require_relative '../spec_helper'
 
 describe ApplicationController do
-  it 'responds with a welcome message' do
-    get '/'
-    expect(last_response.status).to eq(200)
-    expect(last_response.body).to include('Welcome to the Sinatra Template!')
+  it 'redirects to movie index' do
+    visit '/'
+    expect(page.status_code).to eq(200)
+    expect(page.current_path).to eq('/movies')
   end
 end

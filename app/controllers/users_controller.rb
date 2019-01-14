@@ -12,7 +12,7 @@ class UsersController < ApplicationController
       session[:user_id] = user.id
       redirect "/users/#{user.id}"
     end
-    redirect '/signup?error=Invalid form submission, please try again:'
+    redirect '/login?error=Invalid form submission, please try again:'
   end
 
   post '/logout' do

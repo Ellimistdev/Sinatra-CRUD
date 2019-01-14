@@ -157,7 +157,7 @@ describe UsersController do
         click_button 'submit'
 
         expect(page.status_code).to eq(200)
-        expect(page.current_path).to eq('/signup')
+        expect(page.current_path).to eq('/login')
       end
 
       it 'inform user when login is invalid' do
@@ -167,7 +167,7 @@ describe UsersController do
         click_button 'submit'
 
         expect(page.status_code).to eq(200)
-        expect(page.current_path).to eq('/signup')
+        expect(page.current_path).to eq('/login')
         expect(page.body).to include('Invalid form submission')
       end
     end
@@ -302,7 +302,7 @@ describe UsersController do
     it 'away from non-existant users' do
       visit '/users/500'
 
-      expect(page.current_path).to eq('/')
+      expect(page.current_path).to eq('/movies')
     end
   end
 end

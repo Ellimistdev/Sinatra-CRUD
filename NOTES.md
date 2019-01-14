@@ -11,10 +11,6 @@
     - /movies/:id new review form
     - /reviews/:id/edit 
 
-### Logic
-- Generate session key
-
-
 ### Clean Up:
 - del NOTES.md
 - del unused views
