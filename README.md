@@ -13,19 +13,35 @@ $ bundle install
 ```
 
 Migrate and Seed dev DB:
+
 ```bash
 $ rake db:migrate
 $ rake db:seed
 ```
 
-## Usage
-From your terminal:  
-
-    $ endangered-species
+Sessions are enabled through Sinatra, so you'll need to either set an environment variable `SESSION_SECRET` on your system, or add it to a `.env` file at the root of the project. The [dotenv](https://github.com/bkeepers/dotenv) gem is included in development and should automatically pick up your `.env` file.
 
 ## Development
 
-After checking out the repo, run `bundle install` to install dependencies. Then, run `rspec` to run the tests.
+After installation, run 
+
+```bash
+$ rake db:migrate SINATRA_ENV=test
+```
+ to migrate the testing db,
+ 
+```bash
+$ rspec
+```
+to run the tests, and
+
+
+```bash
+$ shotgun
+```
+to launch the dev server.   
+The app should be running on `localhost:9393` by default
+
 
 ## Contributing
 
