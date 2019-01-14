@@ -1,6 +1,5 @@
 ## TODO: 
 ### Style/Copy
-- Write Readme  
 - Complete User page
 - Complete Movies page    
 - Complete Movie page
@@ -13,7 +12,6 @@
     - /reviews/:id/edit 
 
 ### Logic
-- ~~seed db for testing~~
 - Generate session key
 
 
